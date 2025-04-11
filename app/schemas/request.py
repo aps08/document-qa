@@ -10,8 +10,13 @@ class DocumentCreate(BaseModel):
 class DocumentUpdate(BaseModel):
     pass
 
+class ChatCreate(BaseModel):
+    pass
 
-class SessionCreate(BaseModel):
+class ChunkCreate(BaseModel):
+    pass
+
+class ChatSessionCreate(BaseModel):
     name: str
     document_id: int
     system_message: Optional[str] = ""

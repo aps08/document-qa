@@ -22,7 +22,9 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("SQLALCHEMY_DATABASE_URL")
 # ... etc.
-config.set_main_option("sqlalchemy.url", os.getenv("SQLALCHEMY_DATABASE_URL"))
+raw_url = os.getenv("SQLALCHEMY_DATABASE_URL")
+sync_url = raw_url.replace("postgresql+asyncpg", "postgresql")
+config.set_main_option("sqlalchemy.url", sync_url)
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -40,6 +42,8 @@ def run_migrations_offline() -> None:
     context.configure(
         url=url,
         target_metadata=target_metadata,
+        version_table_schema="public",
+        include_schemas=True,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
