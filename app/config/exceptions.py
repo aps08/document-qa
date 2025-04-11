@@ -51,7 +51,7 @@ def custom_generic_exception(
         content={
             "success": False,
             "message": "Something went wrong. Try again later.",
-            "details": exc.args,
+            "details": exc,
         },
     )
 

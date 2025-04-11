@@ -12,12 +12,13 @@ import re
 from datetime import datetime, timezone
 from typing import Annotated, Any
 
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import JSONB
 
 id = Annotated[int, mapped_column(primary_key=True, autoincrement=True)]
 string = Annotated[str, mapped_column()]
+utc_now = lambda: datetime.now(timezone.utc)
 
 
 class Base(DeclarativeBase):
@@ -32,12 +33,10 @@ class Base(DeclarativeBase):
 
     metadata_info: Mapped[dict] = mapped_column(JSONB, default=dict, nullable=False)
     is_deleted: Mapped[bool] = mapped_column(default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        default=datetime.now(timezone.utc), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(default=utc_now, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
-        default=datetime.now(timezone.utc),
-        onupdate=datetime.now(timezone.utc),
+        default=utc_now,
+        onupdate=utc_now,
         nullable=False,
     )
 

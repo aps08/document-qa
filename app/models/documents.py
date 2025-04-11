@@ -7,10 +7,11 @@ the `DocumentChunk` model for managing document chunks.
 The `Document` model inherits common fields and configurations from the `Base` class.
 """
 
-from typing import Optional, List
+from typing import List, Optional
 
 from sqlalchemy import Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from .base import Base, id, string
 
 

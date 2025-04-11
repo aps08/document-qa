@@ -7,11 +7,12 @@ model, allowing chunks to be associated with a specific document.
 The `DocumentChunk` model inherits common fields and configurations from the `Base` class.
 """
 
-from typing import Optional, List
+from typing import List, Optional
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from pgvector.sqlalchemy import Vector
+
 from .base import Base, id
 
 

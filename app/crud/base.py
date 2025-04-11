@@ -7,15 +7,13 @@ The `BaseCrud` class is designed to work with any model that inherits from the `
 class and includes an `is_deleted` field for soft deletion.
 """
 
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
+from typing import Any, Generic, List, Type, TypeVar
+
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import Column, false
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import and_
-from pydantic import BaseModel
 from models import Base
+from pydantic import BaseModel
+from sqlalchemy import Column, false, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -60,11 +58,13 @@ class BaseCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         Returns:
             ModelType | None: The retrieved record, or None if not found.
         """
-        return (
-            await session.query(self.model)
-            .filter(field == value, self.model.is_deleted.is_(false()))
-            .first()
+        query = (
+            select(self.model)
+            .where(field == value, self.model.is_deleted.is_(false()))
+            .limit(1)
         )
+        result = await session.execute(query)
+        return result.scalars().first()
 
     async def get_multi(
         self, *, session: AsyncSession, skip: int = 0, limit: int = 10
@@ -80,13 +80,14 @@ class BaseCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         Returns:
             List[ModelType] | list: A list of retrieved records.
         """
-        return (
-            await session.query(self.model)
-            .filter(self.model.is_deleted.is_(false()))
+        query = (
+            select(self.model)
+            .where(self.model.is_deleted.is_(false()))
             .offset(skip)
             .limit(limit)
-            .all()
         )
+        result = await session.execute(query)
+        return result.scalars().all()
 
     async def create(
         self, *, session: AsyncSession, create_obj: CreateSchemaType
@@ -122,14 +123,16 @@ class BaseCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         Returns:
             ModelType: The updated record.
         """
-        obj_in_data = jsonable_encoder(db_obj)
+        obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
             update_data = obj_in.model_dump()
-        for field in obj_in_data:
+
+        for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
+
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)
@@ -146,7 +149,7 @@ class BaseCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         Returns:
             ModelType: The soft-deleted record.
         """
-        setattr(db_obj, "is_deleted", True)
+        db_obj.is_deleted = True
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)

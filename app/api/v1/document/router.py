@@ -4,10 +4,36 @@ It includes endpoints for ingesting documents, retrieving all documents, creatin
 or managing QA sessions, and selecting documents for QA sessions.
 """
 
-from fastapi import APIRouter, HTTPException, UploadFile
-from typing import Optional, List
+from typing import List, Optional
+
+from api.v1.document.controller import DocumentController
+from config import Response
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from schemas import DocumentGet
+from sqlalchemy.ext.asyncio import AsyncSession
+from utils import get_db_session
 
 document_router = APIRouter(prefix="/document")
+
+
+@document_router.get("/", response_model=List[DocumentGet])
+async def get_all_documents(
+    session: AsyncSession = Depends(get_db_session),
+    skip: Optional[int] = 0,
+    limit: Optional[int] = 10,
+):
+    """
+    Endpoint for retrieving all ingested documents.
+
+    Returns:
+        dict: A list of all ingested documents.
+    """
+    response = await DocumentController().get_all_documents(
+        session=session, skip=skip, limit=limit
+    )
+    return Response.success(
+        message="Retrieved documents informaiton successfully.", body=response
+    )
 
 
 @document_router.post("/ingest")
@@ -28,49 +54,3 @@ async def ingest_document(files: List[UploadFile]):
                 detail=f"File '{file.filename}' is not a PDF. Only PDF files are accepted.",
             )
     return {"success": True}
-
-
-@document_router.get("/")
-async def get_all_documents():
-    """
-    Endpoint for retrieving all ingested documents.
-
-    Returns:
-        dict: A list of all ingested documents.
-    """
-    return {"success": True}
-
-
-@document_router.post("/qa/{session_id}")
-async def create_session_or_post_question(
-    session_id: Optional[int] = None, question: Optional[str] = None
-):
-    """
-    Endpoint for creating a QA session or posting a question to an existing session.
-
-    Args:
-        session_id (Optional[int]): The session ID. If not provided, a new session is created.
-        question (Optional[str]): The question to be posted in the session.
-    Returns:
-        dict: A success message with session details or the question response.
-    """
-    if not session_id is None:
-        return {"success": True, "message": "New session created"}
-    return {"success": True}
-
-
-@document_router.put("/select/{session_id}")
-async def select_document_in_qa(document_ids: List[int], session_id: int = None):
-    """
-    Endpoint for selecting one or more documents in the QA section.
-
-    Args:
-        session_id (int): The session ID where the documents will be added.
-        document_ids (List[int]): A list of document IDs to be added to the session.
-
-    Returns:
-        dict: A success message if the documents are added to the session.
-    """
-    if not session_id:
-        raise HTTPException(status_code=404, detail="Session not found")
-    return {"success": True, "message": "Document added to session"}

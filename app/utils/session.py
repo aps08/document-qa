@@ -4,11 +4,12 @@ using a generator and context manager. It is designed to be used with
 FastAPI's `Depends` for dependency injection.
 """
 
-from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy.orm import sessionmaker
 from contextlib import asynccontextmanager
-from config.configuration import config
+from typing import AsyncGenerator
+
+from config import config
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
 
 engine = create_async_engine(config.SQLALCHEMY_DATABASE_URL, future=True, echo=True)
 async_session_factory = async_sessionmaker(
@@ -16,7 +17,6 @@ async_session_factory = async_sessionmaker(
 )
 
 
-@asynccontextmanager
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Provides a database session using a context manager.
@@ -27,5 +27,9 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_factory() as session:
         try:
             yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
         finally:
             await session.close()

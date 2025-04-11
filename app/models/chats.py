@@ -7,8 +7,10 @@ The `Chats` model inherits common fields and configurations from the `Base` clas
 """
 
 from typing import Optional
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from .base import Base, id, string
 
 
