@@ -83,13 +83,16 @@ class ChatController:
             system_message=chat_session.system_message,
             question=question_info.question,
             max_tokens=question_info.max_tokens,
+            model=question_info.model,
         )
         new_chat_obj = {
             "session_id": chat_session_id,
             "question": question_info.question,
             "answer": answer,
-            "metadata_info": {"chat_completion_id": chat_id},
-            "usage": answer_usage + usage,
+            "metadata_info": {
+                "chat_completion_id": chat_id,
+                "usage": answer_usage + usage,
+            },
         }
         chat_obj = await self.chat_crud.create(session=session, create_obj=new_chat_obj)
         return {

@@ -14,6 +14,7 @@ class DocumentCrud(BaseCrud[Documents, DocumentUpdate, DocumentCreate]):
     CRUD class for managing documents.
     Inherits common CRUD operations from BaseCrud.
     """
+
     def __init__(self):
         """
         Initializes the DocumentCrud with the Documents model.

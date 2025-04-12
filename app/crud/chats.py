@@ -13,6 +13,7 @@ class ChatCrud(BaseCrud[Chats, ChatCreate, ChatCreate]):
     CRUD class for managing chats.
     Inherits common CRUD operations from BaseCrud.
     """
+
     def __init__(self):
         """
         Initializes the ChatCrud with the Chats model.

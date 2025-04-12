@@ -18,6 +18,7 @@ class DocumentChunkCrud(BaseCrud[DocumentChunks, ChunkCreate, ChunkCreate]):
     CRUD class for managing document chunks.
     Provides methods to process document chunks and perform similarity searches.
     """
+
     def __init__(self):
         """
         Initializes the DocumentChunkCrud with the DocumentChunks model.

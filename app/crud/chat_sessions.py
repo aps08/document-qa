@@ -14,6 +14,7 @@ class ChatSessionCrud(BaseCrud[ChatSessions, ChatSessionCreate, ChatSessionCreat
     CRUD class for managing chat sessions.
     Inherits common CRUD operations from BaseCrud.
     """
+
     def __init__(self):
         """
         Initializes the ChatSessionCrud with the ChatSessions model.
