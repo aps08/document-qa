@@ -1,8 +1,8 @@
 """create all tables
 
-Revision ID: 689800fa3b23
+Revision ID: ff3f727e564e
 Revises: 
-Create Date: 2025-04-12 03:37:46.627301
+Create Date: 2025-04-12 08:46:50.295948
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '689800fa3b23'
+revision: str = 'ff3f727e564e'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,8 +30,8 @@ def upgrade() -> None:
     sa.Column('processing_time', sa.Float(), nullable=True),
     sa.Column('metadata_info', postgresql.JSONB(astext_type=sa.Text()), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('chat_sessions',
@@ -41,8 +41,8 @@ def upgrade() -> None:
     sa.Column('document_id', sa.Integer(), nullable=False),
     sa.Column('metadata_info', postgresql.JSONB(astext_type=sa.Text()), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['document_id'], ['documents.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -54,8 +54,8 @@ def upgrade() -> None:
     sa.Column('page_number', sa.Integer(), nullable=True),
     sa.Column('metadata_info', postgresql.JSONB(astext_type=sa.Text()), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['document_id'], ['documents.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -64,11 +64,11 @@ def upgrade() -> None:
     sa.Column('session_id', sa.Integer(), nullable=False),
     sa.Column('question', sa.String(), nullable=False),
     sa.Column('answer', sa.String(), nullable=False),
-    sa.Column('usage', sa.String(), nullable=True),
+    sa.Column('usage', sa.Integer(), nullable=False),
     sa.Column('metadata_info', postgresql.JSONB(astext_type=sa.Text()), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['session_id'], ['chat_sessions.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

@@ -9,7 +9,7 @@ from typing import List, Optional
 from api.v1.document.controller import DocumentController
 from config import Response
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
-from schemas import DocumentGet
+from schemas import DocumentGet, DocumentIngestion
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils import get_db_session
 
@@ -36,8 +36,10 @@ async def get_all_documents(
     )
 
 
-@document_router.post("/ingest")
-async def ingest_document(files: List[UploadFile]):
+@document_router.post("/ingest", response_model=DocumentIngestion)
+async def ingest_document(
+    new_file: UploadFile, session: AsyncSession = Depends(get_db_session)
+):
     """
     Ingest multiple PDF documents, generate embeddings,
     and store in the vector database.
@@ -47,10 +49,10 @@ async def ingest_document(files: List[UploadFile]):
     Returns:
         dict: A success message indicating the document was ingested.
     """
-    for file in files:
-        if file.content_type != "application/pdf":
-            raise HTTPException(
-                status_code=400,
-                detail=f"File '{file.filename}' is not a PDF. Only PDF files are accepted.",
-            )
-    return {"success": True}
+    if new_file.content_type != "application/pdf":
+        raise HTTPException(
+            status_code=400,
+            detail="Only PDF file is accepted.",
+        )
+    response = await DocumentController().add_document(session=session, file=new_file)
+    return Response.success(message="Document ingested successfully.", body=response)

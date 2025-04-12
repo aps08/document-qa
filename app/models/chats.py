@@ -33,6 +33,6 @@ class Chats(Base):
     )
     question: Mapped[string]
     answer: Mapped[string]
-    usage: Mapped[Optional[string]] = mapped_column(nullable=True)
+    usage: Mapped[Optional[int]] = mapped_column(default=0, nullable=False)
 
     session: Mapped["ChatSessions"] = relationship(back_populates="chats")

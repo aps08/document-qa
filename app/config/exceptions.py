@@ -4,6 +4,7 @@ Each function is designed to handle specific types of exceptions and return
 a standardized response format.
 """
 
+import traceback
 from typing import Optional
 
 from config.response import Response
@@ -11,9 +12,7 @@ from fastapi import Request
 from fastapi.exceptions import HTTPException, RequestValidationError
 
 
-def custom_http_exception(
-    exc: HTTPException, request: Optional[Request] = None
-) -> Response:
+def custom_http_exception(request: Request, exc: HTTPException) -> Response:
     """
     Handles HTTP exceptions and returns a standardized response.
 
@@ -24,18 +23,17 @@ def custom_http_exception(
     Returns:
         Response: A standardized HTTP response with the exception details.
     """
-    status_code = 400
-    if hasattr(exc, "status_code"):
-        status_code = exc.status_code
     return Response(
-        status_code=status_code,
-        content={"success": False, "message": exc.detail, "details": None},
+        status_code=getattr(exc, "status_code", 400),
+        content={
+            "success": False,
+            "message": getattr(exc, "detail", ""),
+            "details": "",
+        },
     )
 
 
-def custom_generic_exception(
-    exc: Exception, request: Optional[Request] = None
-) -> Response:
+def custom_generic_exception(request: Request, exc: Exception) -> Response:
     """
     Handles generic exceptions and returns a standardized response.
 
@@ -51,13 +49,13 @@ def custom_generic_exception(
         content={
             "success": False,
             "message": "Something went wrong. Try again later.",
-            "details": exc,
+            "details": exc.args[0],
         },
     )
 
 
 def custom_validation_exception(
-    exc: RequestValidationError, request: Optional[Request] = None
+    request: Request, exc: RequestValidationError
 ) -> Response:
     """
     Handles validation exceptions and returns a standardized response.

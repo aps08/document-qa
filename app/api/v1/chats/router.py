@@ -5,17 +5,22 @@ It includes endpoints for creating new sessions and asking questions within exis
 
 from api.v1.chats.controller import ChatController
 from config import Response
-from fastapi import APIRouter, Body, Depends, HTTPException
-from schemas import QuestionRequest, SessionCreate
+from fastapi import APIRouter, Depends, HTTPException
+from schemas import (
+    QuestionRequest,
+    ChatSessionCreate,
+    ChatCompletion,
+    CreateChatSession,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils import get_db_session
 
 chats_router = APIRouter(prefix="/session")
 
 
-@chats_router.post("/", response_model=dict)
+@chats_router.post("/", response_model=CreateChatSession)
 async def create_session(
-    chat_session_data: SessionCreate,
+    chat_session_data: ChatSessionCreate,
     db_session: AsyncSession = Depends(get_db_session),
 ):
     """
@@ -34,31 +39,26 @@ async def create_session(
     return Response.success(message="Session created successfully.", body=response)
 
 
-@chats_router.post("/{session_id}", response_model=dict)
+@chats_router.post("/{session_id}", response_model=ChatCompletion)
 async def ask_question(
     session_id: int,
     question_data: QuestionRequest,
-    db_session: AsyncSession = Depends(get_db_session),
+    session: AsyncSession = Depends(get_db_session),
 ):
     """
     Ask a question within an existing session.
 
     Args:
         session_id (int): The ID of the session to ask the question in.
-        question_data (QuestionRequest): The question data including the question text and max_tokens.
-        db_session (AsyncSession): The database session.
+        question_data (QuestionRequest): The question data including the question text, max_tokens and model.
+        session (AsyncSession): The database session.
 
     Returns:
         dict: A success message with the answer to the question.
     """
     if not session_id:
         raise HTTPException(status_code=404, detail="Session not found.")
-
-    # response = await SessionController().ask_question(
-    #     session=db_session,
-    #     session_id=session_id,
-    #     question=question_data.question,
-    #     max_tokens=question_data.max_tokens,
-    # )
-
-    return Response.success(message="Question answered successfully.", body=[])
+    response = await ChatController().ask_question(
+        session=session, question_info=question_data, chat_session_id=session_id
+    )
+    return Response.success(message="Question answered successfully.", body=response)

@@ -1,7 +1,11 @@
 import uvicorn
 from api.v1 import api_v1_router
-from config import (config, custom_generic_exception, custom_http_exception,
-                    custom_validation_exception)
+from config import (
+    config,
+    custom_generic_exception,
+    custom_http_exception,
+    custom_validation_exception,
+)
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware

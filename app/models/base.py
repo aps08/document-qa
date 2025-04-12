@@ -11,7 +11,7 @@ Examples:
 import re
 from datetime import datetime, timezone
 from typing import Annotated, Any
-
+from sqlalchemy import TIMESTAMP
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -33,8 +33,11 @@ class Base(DeclarativeBase):
 
     metadata_info: Mapped[dict] = mapped_column(JSONB, default=dict, nullable=False)
     is_deleted: Mapped[bool] = mapped_column(default=False, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(default=utc_now, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), default=utc_now, nullable=False
+    )
     updated_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True),
         default=utc_now,
         onupdate=utc_now,
         nullable=False,
