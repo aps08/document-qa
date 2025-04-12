@@ -4,13 +4,13 @@ It allows users to generate vector embeddings for a given text using a specified
 """
 
 from typing import List, Tuple
-from openai import OpenAI
-from config import config
 
-client = OpenAI()
+from openai import AsyncOpenAI
+
+client = AsyncOpenAI()
 
 
-def get_vector(*, text: str) -> Tuple[List[float], int]:
+async def get_vector(*, text: str) -> Tuple[List[float], int]:
     """
     Generates a vector embedding for the given text using the specified OpenAI model.
 
@@ -21,15 +21,15 @@ def get_vector(*, text: str) -> Tuple[List[float], int]:
         List[float]: The embedding vector for the input text.
         int: The total number of tokens used in the request.
     """
-    response = client.embeddings.create(input=text, model="text-embedding-3-small")
+    response = await client.embeddings.create(input=text, model="text-embedding-3-small")
     return response.data[0].embedding, response.usage.total_tokens
 
 
-def chat_completion(
+async def chat_completion(
     *, context: str, system_message: str, question: str, max_tokens: int, model: str
 ) -> Tuple[str, str, int]:
     system_message += "If data is found inside the document also mention the page number from which the response is provided. In case relevant data is not found. Say 'Document doesn't contain enough data.'"
-    completion = client.chat.completions.create(
+    completion = await client.chat.completions.create(
         model=model,
         messages=[
             {"role": "system", "content": system_message},

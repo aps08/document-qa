@@ -6,7 +6,7 @@ These schemas are used for data validation and serialization of API requests.
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class DocumentCreate(BaseModel):
@@ -46,9 +46,9 @@ class ChatSessionCreate(BaseModel):
     Schema for creating a new chat session.
     """
 
-    name: str
-    document_id: int
-    system_message: Optional[str] = ""
+    name: str = Field(..., example="AWS White Paper Chat")
+    document_id: int = Field(..., example=5)
+    system_message: Optional[str] = Field("", example="Result in pointers.")
 
 
 class OpenAIModel(str, Enum):
@@ -69,6 +69,6 @@ class QuestionRequest(BaseModel):
     Schema for submitting a question to the system.
     """
 
-    question: str
-    model: Optional[OpenAIModel] = OpenAIModel.GPT_3_5_TURBO
-    max_tokens: Optional[int] = 300
+    question: str = Field(..., example="What is the purpose of region in AWS?")
+    model: Optional[OpenAIModel] = Field("gpt-3.5-turbo")
+    max_tokens: Optional[int] = Field(300)

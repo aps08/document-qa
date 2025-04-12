@@ -5,6 +5,7 @@ It provides functionality to interact with the `Chats` model.
 
 from models import Chats
 from schemas import ChatCreate
+
 from .base import BaseCrud
 
 

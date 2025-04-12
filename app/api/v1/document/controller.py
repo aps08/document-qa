@@ -1,16 +1,29 @@
+"""
+This module defines the controller for document management functionality.
+It handles the business logic for retrieving, ingesting, and processing documents.
+"""
+
 import hashlib
 from io import BytesIO
 from typing import Any, Dict, List
+
+from crud import DocumentChunkCrud, DocumentCrud
 from fastapi import UploadFile
-from utils import get_vector
-from crud import DocumentCrud, DocumentChunkCrud
-from sqlalchemy.ext.asyncio import AsyncSession
 from PyPDF2 import PdfReader
+from sqlalchemy.ext.asyncio import AsyncSession
+from utils import logger
 
 
 class DocumentController:
+    """
+    Controller for managing document-related operations.
+    Provides methods to retrieve documents, ingest new documents, and process document chunks.
+    """
 
     def __init__(self):
+        """
+        Initializes the DocumentController with required CRUD dependencies.
+        """
         self.document_crud = DocumentCrud()
         self.document_chunk_crud = DocumentChunkCrud()
 
@@ -26,8 +39,9 @@ class DocumentController:
             limit (int): The maximum number of records to retrieve (default: 10).
 
         Returns:
-            List of document objects.
+            List[Dict[str, Any]]: A list of document objects with metadata.
         """
+        logger.info("Inside document controller, executing get_all_documents ...")
         documents = await self.document_crud.get_multi(
             session=session, skip=skip, limit=limit
         )
@@ -51,6 +65,17 @@ class DocumentController:
     async def add_document(
         self, *, session: AsyncSession, file: UploadFile
     ) -> Dict[str, Any]:
+        """
+        Ingest a new document, extract its content, and process it into chunks.
+
+        Args:
+            session (AsyncSession): The database session.
+            file (UploadFile): The uploaded PDF file to be ingested.
+
+        Returns:
+            Dict[str, Any]: Metadata and processing details of the ingested document.
+        """
+        logger.info("Inside document controller, executing add_document ...")
         file_content = await file.read()
         reader = PdfReader(BytesIO(file_content))
         text_per_page = [page.extract_text() for page in reader.pages]

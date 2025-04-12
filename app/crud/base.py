@@ -14,6 +14,7 @@ from models import Base
 from pydantic import BaseModel
 from sqlalchemy import Column, false, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from utils import logger
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -58,6 +59,7 @@ class BaseCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         Returns:
             ModelType | None: The retrieved record, or None if not found.
         """
+        logger.info("Inside basecrud, executing get ...")
         query = (
             select(self.model)
             .where(field == value, self.model.is_deleted.is_(false()))
@@ -80,6 +82,7 @@ class BaseCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         Returns:
             List[ModelType] | list: A list of retrieved records.
         """
+        logger.info("Inside basecrud, executing get_multi ...")
         query = (
             select(self.model)
             .where(self.model.is_deleted.is_(false()))
@@ -102,6 +105,7 @@ class BaseCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         Returns:
             ModelType: The created record.
         """
+        logger.info("Inside basecrud, executing create ...")
         obj_in_data = jsonable_encoder(create_obj)
         db_obj = self.model(**obj_in_data)
         session.add(db_obj)
@@ -123,6 +127,7 @@ class BaseCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         Returns:
             ModelType: The updated record.
         """
+        logger.info("Inside basecrud, executing update ...")
         obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
             update_data = obj_in
@@ -149,6 +154,7 @@ class BaseCrud(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         Returns:
             ModelType: The soft-deleted record.
         """
+        logger.info("Inside basecrud, executing delete ...")
         db_obj.is_deleted = True
         session.add(db_obj)
         await session.commit()

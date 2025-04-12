@@ -8,6 +8,7 @@ The `Document` model inherits common fields and configurations from the `Base` c
 """
 
 from typing import List, Optional
+
 from sqlalchemy import Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 

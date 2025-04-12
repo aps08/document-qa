@@ -11,6 +11,7 @@ Examples:
 import re
 from datetime import datetime, timezone
 from typing import Annotated, Any
+
 from sqlalchemy import TIMESTAMP
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declared_attr

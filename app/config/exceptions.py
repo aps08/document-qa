@@ -4,15 +4,14 @@ Each function is designed to handle specific types of exceptions and return
 a standardized response format.
 """
 
-import traceback
-from typing import Optional
-
 from config.response import Response
 from fastapi import Request
-from fastapi.exceptions import HTTPException, RequestValidationError
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from utils import logger
 
 
-def custom_http_exception(request: Request, exc: HTTPException) -> Response:
+def custom_http_exception(request: Request, exc: StarletteHTTPException) -> Response:
     """
     Handles HTTP exceptions and returns a standardized response.
 
@@ -23,6 +22,7 @@ def custom_http_exception(request: Request, exc: HTTPException) -> Response:
     Returns:
         Response: A standardized HTTP response with the exception details.
     """
+    logger.error(exc)
     return Response(
         status_code=getattr(exc, "status_code", 400),
         content={
@@ -44,6 +44,7 @@ def custom_generic_exception(request: Request, exc: Exception) -> Response:
     Returns:
         Response: A standardized HTTP response with a generic error message.
     """
+    logger.error(exc)
     return Response(
         status_code=500,
         content={
@@ -67,6 +68,7 @@ def custom_validation_exception(
     Returns:
         Response: A standardized HTTP response with validation error details.
     """
+    logger.error(exc)
     validation_errors = None
     if hasattr(exc, "errors"):
         validation_errors = exc.errors()[0]
@@ -74,7 +76,7 @@ def custom_validation_exception(
         status_code=422,
         content={
             "success": False,
-            "message": "Request body validation failed",
-            "details": validation_errors["msg"],
+            "message": f"{validation_errors['loc'][1]} {validation_errors['msg'].lower()}",
+            "details": "Request body validation failed",
         },
     )

@@ -3,14 +3,15 @@ This module defines the CRUD operations for managing document chunks.
 It provides functionality to process and store document chunks, as well as perform similarity searches.
 """
 
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-from sqlalchemy import select
 from models import DocumentChunks
 from schemas import ChunkCreate
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from utils import get_vector, logger
+
 from .base import BaseCrud
-from utils import get_vector
 
 
 class DocumentChunkCrud(BaseCrud[DocumentChunks, ChunkCreate, ChunkCreate]):
@@ -39,9 +40,11 @@ class DocumentChunkCrud(BaseCrud[DocumentChunks, ChunkCreate, ChunkCreate]):
         Returns:
             Dict[str, Any]: A dictionary containing the creation timestamp and total token usage.
         """
+        logger.info("Inside documentchunk crud, executing process_document_chunks ...")
         total_usage = 0
+        chunk_objs = []
         for page_number, content in enumerate(chunks, 1):
-            vector, usage = get_vector(text=content)
+            vector, usage = await get_vector(text=content)
             new_chunk_obj = {
                 "page_number": page_number,
                 "content": content,
@@ -50,8 +53,17 @@ class DocumentChunkCrud(BaseCrud[DocumentChunks, ChunkCreate, ChunkCreate]):
                 "metadata_info": {"usage": usage},
             }
             total_usage += usage
-            chunk_obj = await self.create(session=session, create_obj=new_chunk_obj)
-        return {"created_at": chunk_obj.created_at, "usage": total_usage}
+            chunk_objs.append(DocumentChunks(**new_chunk_obj))
+            if len(chunk_objs) > 10:
+                last_obj = chunk_objs[-1]
+                session.add_all(chunk_objs)
+                await session.commit()
+                chunk_objs = []
+        if chunk_objs:
+            last_obj = chunk_objs[-1]
+            session.add_all(chunk_objs)
+            await session.commit()
+        return {"created_at": last_obj.created_at, "usage": total_usage}
 
     async def similarity_search(
         self,
@@ -71,6 +83,7 @@ class DocumentChunkCrud(BaseCrud[DocumentChunks, ChunkCreate, ChunkCreate]):
         Returns:
             List[Any]: A list of the most similar document chunks.
         """
+        logger.info("Inside documentchunk crud, executing similarity_search ...")
         return await session.scalars(
             select(DocumentChunks)
             .where(DocumentChunks.document_id == document_id)

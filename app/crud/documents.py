@@ -5,6 +5,7 @@ It provides functionality to interact with the `Documents` model.
 
 from models import Documents
 from schemas import DocumentCreate, DocumentUpdate
+from utils import logger
 
 from .base import BaseCrud
 

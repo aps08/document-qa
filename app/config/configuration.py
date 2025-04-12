@@ -23,6 +23,7 @@ class Config(BaseSettings):
     OPENAI_API_KEY: str = cast(str, os.getenv("OPENAI_API_KEY"))
     ENV: str = cast(str, os.getenv("ENV", "development"))
     ORIGINS: str = cast(str, os.getenv("ORIGINS", "*"))
+    ECHO: bool = cast(bool, os.getenv("ECHO", False))
     DESCRIPTION: str = (
         "An application that involves backend services and QCA features powered by a Retrieval-Augmented Generation (RAG) system. The application aims to manage users, documents, and an ingestion process that generates embeddings for document retrieval in a Q&A setting."
     )

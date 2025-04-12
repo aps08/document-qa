@@ -1,0 +1,12 @@
+# files
+README.md
+.env.example
+LICENSE
+
+# folder
+venv/
+env/
+docs/
+tests/
+__pycache__/
+.github/
