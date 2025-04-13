@@ -10,6 +10,23 @@ An application featuring backend services and Question-Context-Answer (QCA) capa
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![Openai](https://img.shields.io/badge/OPENAI-000.svg?style=for-the-badge&logo=microsoftonedrive&logoColor=white)
 
+## Table of Contents
+
+- [Run Locally](#run-locally)
+- [Run Locally with Dockerfile](#run-locally-with-dockerfile)
+- [Features](#features)
+- [Current Architecture Diagram](#current-architecture-diagram)
+- [Automated CI/CD](#automated-cicd)
+- [API Endpoints](#api-endpoints)
+- [ER Diagram](#er-diagram)
+- [UML Diagrams](#uml-diagrams)
+    - [ORM Classes](#orm-classes)
+    - [CRUD Classes](#crud-classes)
+    - [Controller Classes](#controller-classes)
+- [Architecture Diagram for Scale](#architecture-diagram-for-scale)
+- [Limitations](#limitations)
+- [Planned Enhancements](#planned-enhancements)
+
 ## Run locally
 
 ```sh

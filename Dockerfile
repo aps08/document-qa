@@ -1,18 +1,29 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
-RUN groupadd -g 1234 docqateam && \
-    useradd -m -u 1234 -g docqateam docqauser
+ARG DOCKER_GROUP=docteam
+ARG DOCKER_USER=docUser
 
-USER docqauser
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-WORKDIR /app/docqauser
+RUN groupadd -g 1234 $DOCKER_GROUP && \
+    useradd -m -u 1234 -g $DOCKER_GROUP $DOCKER_USER
+
+WORKDIR /app/$DOCKER_USER
+
+COPY start.sh .
+
+RUN chmod +x start.sh
+
+RUN chown -R $DOCKER_USER:$DOCKER_GROUP /app/$DOCKER_USER
+
+USER $DOCKER_USER
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --user -r requirements.txt && \
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+RUN pip install --no-cache-dir --user -r requirements.txt
 
-COPY . .
+COPY --chown=$DOCKER_USER:$DOCKER_GROUP . .
 
 EXPOSE 8000
 
