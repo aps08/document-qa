@@ -2,6 +2,9 @@
 
 An application featuring backend services and Question-Context-Answer (QCA) capabilities, powered by a Retrieval-Augmented Generation (RAG) system. The application is designed to manage users, handle documents, and run an ingestion pipeline that generates embeddings for efficient document retrieval.
 
+> **⚠️ IMPORTANT:**  
+> Kindly use `postgresql+asyncpg` instead of `postgresql` in `SQLALCHEMY_DATABASE_URL` as given in the [example](./.env.example) file.
+
 ## Tech Stack
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
