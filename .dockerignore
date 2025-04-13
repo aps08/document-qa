@@ -2,6 +2,8 @@
 README.md
 .env.example
 LICENSE
+.coverage
+.coveragerc
 
 # folder
 venv/
@@ -10,3 +12,7 @@ docs/
 tests/
 __pycache__/
 .github/
+coverage/
+htmlcov/
+.pytest_cache/
+.vscode/

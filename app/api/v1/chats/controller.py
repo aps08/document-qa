@@ -5,8 +5,14 @@ It handles the business logic for creating sessions and processing questions.
 
 from typing import Any, Dict
 
-from crud import (ChatCrud, ChatSessionCrud, ChatSessions, DocumentChunkCrud,
-                  DocumentCrud, Documents)
+from crud import (
+    ChatCrud,
+    ChatSessionCrud,
+    ChatSessions,
+    DocumentChunkCrud,
+    DocumentCrud,
+    Documents,
+)
 from fastapi import HTTPException
 from schemas import ChatSessionCreate, QuestionRequest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,7 +53,7 @@ class ChatController:
         )
         if not document:
             raise HTTPException(
-                status_code=404, detail=f"Document with ID {document.id} not found"
+                status_code=404, detail=f"Document with ID {chat_session_data.document_id} not found"
             )
         chat_session_obj = chat_session_data.model_dump()
         chat_session = await self.chat_session_crud.create(

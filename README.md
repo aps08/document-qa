@@ -23,6 +23,7 @@ An application featuring backend services and Question-Context-Answer (QCA) capa
     - [ORM Classes](#orm-classes)
     - [CRUD Classes](#crud-classes)
     - [Controller Classes](#controller-classes)
+- [Testing](#testing)
 - [Architecture Diagram for Scale](#architecture-diagram-for-scale)
 - [Limitations](#limitations)
 - [Planned Enhancements](#planned-enhancements)
@@ -238,6 +239,25 @@ classDiagram
     DocumentController --> DocumentCrud : uses
     DocumentController --> DocumentChunkCrud : uses
 ```
+
+## Testing
+
+The application includes a comprehensive test suite to ensure the reliability and correctness of its features. The tests are written using pytest and cover various aspects of the application, including API endpoints, database operations, and business logic. All the tests are given [here](./tests/)
+
+Follow the commands to run the test cases
+
+```sh
+# runs all test cases
+pytest
+
+# get coverage report
+pytest --cov=app
+```
+
+Test coverage at current point of time:
+
+![Endpoints](./docs/COVERAGE.png)
+
 
 ## Architecture Diagram for scale
 ![Endpoints](./docs/UPGRADE.png)

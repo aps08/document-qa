@@ -6,8 +6,12 @@ It includes endpoints for creating new sessions and asking questions within exis
 from api.v1.chats.controller import ChatController
 from config import Response
 from fastapi import APIRouter, Depends, HTTPException
-from schemas import (ChatCompletion, ChatSessionCreate, CreateChatSession,
-                     QuestionRequest)
+from schemas import (
+    ChatCompletion,
+    ChatSessionCreate,
+    CreateChatSession,
+    QuestionRequest,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils import get_db_session
 

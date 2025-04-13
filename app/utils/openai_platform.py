@@ -21,7 +21,9 @@ async def get_vector(*, text: str) -> Tuple[List[float], int]:
         List[float]: The embedding vector for the input text.
         int: The total number of tokens used in the request.
     """
-    response = await client.embeddings.create(input=text, model="text-embedding-3-small")
+    response = await client.embeddings.create(
+        input=text, model="text-embedding-3-small"
+    )
     return response.data[0].embedding, response.usage.total_tokens
 
 
